@@ -7,15 +7,11 @@
 - `reels/001.mp4` 〜 `reels/018.mp4` — 投稿対象の動画本体（GitHub Pagesで公開し、`video_url`としてInstagram Graph APIに渡す）
 - `reels/queue.json` — 投稿キュー。先頭から`posted: false`の最初の1件を毎日1本消化する
 - `scripts/publish_reel.py` — コンテナ作成→ステータス確認→公開の3ステップを実行し、成功したら`queue.json`を更新するスクリプト
-- `.github/workflows/post-reel.yml` — 日次実行用のGitHub Actionsワークフロー（現在はスケジュール無効・手動実行のみ）
+- `.github/workflows/post-reel.yml` — 日次実行用のGitHub Actionsワークフロー（毎日 JST 18:00 に自動実行。手動実行も可能）
 
-## 動作確認前に必ず確認してほしいこと
+## queue.json のcaption確認について（確認済み）
 
-`reels/queue.json` の中に `_needs_review` フィールドが付いているエントリが3件あります。元のCSV（`shorts-mapping.csv`）とローカルファイル名からの推測でcaptionを割り当てたため、内容が実際の動画と一致しているか一度目視で確認してください。
-
-- `006` / `017`: 「自由落下」と「鉛直投げ上げ」のどちらのCSV行がどちらの動画ファイルに対応するか、ファイル名とタイトル文言からの推測です
-- `009`: 「7章_よくある」というファイル名と「2物体の衝突」というCSVタイトルの対応も推測です
-- `018`: `単原子分子理想気体の定圧変化.MP4` はCSVの1〜17行目（YouTube URL付き・撮影済み）に対応する行が見つかりませんでした。caption未設定のため現状は投稿対象から自動的に除外されています。captionを設定すれば投稿対象に加わります
+`_needs_review`フィールドが付いている3件（`006`/`017`の対応、`009`の対応、`018`のcaption未設定）は2026-09-23に清水さんが目視確認済みです。006/017・009の対応は正しいことを確認済み。018はYouTube未公開のためcaption未設定のまま投稿対象から除外しています（`_needs_review`フィールド自体は記録として残しています）。
 
 ## セットアップ状況
 
@@ -24,10 +20,10 @@
 - [x] 投稿スクリプト・ワークフロー作成
 - [x] GitHub Actions Secrets（`IG_ACCESS_TOKEN` / `IG_USER_ID`）設定
 - [x] GitHub Pages公開設定
-- [ ] `queue.json`のcaption内容を目視確認（上記の3件）
-- [ ] `workflow_dispatch`（`dry_run: true`）での動作確認
-- [ ] `workflow_dispatch`（`dry_run: false`）で実際に1本だけ手動投稿して確認
-- [ ] 問題なければ`.github/workflows/post-reel.yml`の`schedule`のコメントを外して毎日自動実行を有効化
+- [x] `queue.json`のcaption内容を目視確認（3件とも確認済み、上記参照）
+- [x] `workflow_dispatch`（`dry_run: true`）での動作確認
+- [x] `workflow_dispatch`（`dry_run: false`）で001を実際に手動投稿して確認（https://www.instagram.com/reel/DdoDOx2CpaX/）
+- [x] `schedule`を有効化（毎日 JST 18:00 / UTC 09:00, cron: `"0 9 * * *"`, 2026-09-23〜）
 - [ ] アクセストークンの60日ごとのリフレッシュ運用を別途仕組み化する（未着手）
 
 ## 動画URLの形式
