@@ -1,0 +1,186 @@
+[
+  {
+    "id": "001",
+    "file": "reels/001.mp4",
+    "source_title": "くさび型空気層",
+    "caption": "くさび型空気層、経路差の作り方を最短で【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/kGIg28VBcrc",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null
+  },
+  {
+    "id": "002",
+    "file": "reels/002.mp4",
+    "source_title": "7章_床",
+    "caption": "床との衝突、反発係数の式を一瞬で立てる【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/xqsSH60dCRY",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null
+  },
+  {
+    "id": "003",
+    "file": "reels/003.mp4",
+    "source_title": "7章_斜め床",
+    "caption": "床との斜め衝突、速度を分解すれば一発で解ける【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/wADgc3-gTh0",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null
+  },
+  {
+    "id": "004",
+    "file": "reels/004.mp4",
+    "source_title": "13_Qの公式",
+    "caption": "熱量Qの公式、mcΔTとmLの使い分けが一発で決まる【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/p81OFfX-FCs",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null
+  },
+  {
+    "id": "005",
+    "file": "reels/005.mp4",
+    "source_title": "リード15章_正弦波の式",
+    "caption": "正弦波の式、丸暗記せず自分で組み立てる【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/mOB0as97VkE",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null
+  },
+  {
+    "id": "006",
+    "file": "reels/006.mp4",
+    "source_title": "リード2章_自由落下",
+    "caption": "自由落下と鉛直投げ上げ、3公式の当てはめ方【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/iIkIi915THo",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null,
+    "_needs_review": "CSVタイトルは「自由落下と鉛直投げ上げ」両方に言及しており、file 006と017のどちらに対応するか推測で割り振っています。投稿前に一度確認してください。"
+  },
+  {
+    "id": "007",
+    "file": "reels/007.mp4",
+    "source_title": "リード20章_薄膜の干渉",
+    "caption": "薄膜の干渉、光路差と位相反転を最短で決める【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/gAKqSGoWx-E",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null
+  },
+  {
+    "id": "008",
+    "file": "reels/008.mp4",
+    "source_title": "リード第1章_グラフの見方",
+    "caption": "v-tグラフとx-tグラフ、傾きと面積で読み解く【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/ecN8CQwB4cM",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null
+  },
+  {
+    "id": "009",
+    "file": "reels/009.mp4",
+    "source_title": "7章_よくある",
+    "caption": "2物体の衝突、運動量保存と反発係数で解く型【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/_A6J8ChPv_M",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null,
+    "_needs_review": "ファイル名「7章_よくある」とCSVタイトル「2物体の衝突」の対応はトピックからの推測です。投稿前に内容を確認してください。"
+  },
+  {
+    "id": "010",
+    "file": "reels/010.mp4",
+    "source_title": "13_PV図の温度",
+    "caption": "P-V図の読み方、温度の高低が一目で決まる【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/Y9vCnKWUHzk",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null
+  },
+  {
+    "id": "011",
+    "file": "reels/011.mp4",
+    "source_title": "リード26章_導体棒に生じる起電力",
+    "caption": "導体棒に生じる起電力、vBLと向きを即決める【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/Y1sPqpEPh6A",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null
+  },
+  {
+    "id": "012",
+    "file": "reels/012.mp4",
+    "source_title": "リード3章_力の種類",
+    "caption": "力の種類、図に描く力の見つけ方が一気に片づく【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/UVmcgsc1m3w",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null
+  },
+  {
+    "id": "013",
+    "file": "reels/013.mp4",
+    "source_title": "リード20章_ヤングの実験_経路差1",
+    "caption": "ヤングの実験の経路差①、近似の使い方を最短で【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/OJ0jCc-uNuM",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null
+  },
+  {
+    "id": "014",
+    "file": "reels/014.mp4",
+    "source_title": "リード第1章_等加速度直線運動3公式",
+    "caption": "等加速度直線運動の3公式、使い分けが一瞬で決まる【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/Ika9lp5ogOI",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null
+  },
+  {
+    "id": "015",
+    "file": "reels/015.mp4",
+    "source_title": "リード20章_ヤングの実験_経路差2",
+    "caption": "ヤングの実験の経路差②、sinθ≒tanθで一発【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/DPlIpLJ4zHE",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null
+  },
+  {
+    "id": "016",
+    "file": "reels/016.mp4",
+    "source_title": "リード18章_ドップラー効果",
+    "caption": "ドップラー効果、公式の符号を迷わず決める【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/9DJhrKQqCK4",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null
+  },
+  {
+    "id": "017",
+    "file": "reels/017.mp4",
+    "source_title": "リード2章_鉛直投げ上げ",
+    "caption": "鉛直投げ上げ、最高点と落下時間を最短で出す【高校物理】",
+    "youtube_url": "https://www.youtube.com/shorts/5TDTis1z0VI",
+    "posted": false,
+    "posted_at": null,
+    "media_id": null,
+    "_needs_review": "CSVタイトルは「自由落下と鉛直投げ上げ」両方に言及しており、file 006と017のどちらに対応するか推測で割り振っています。投稿前に一度確認してください。"
+  },
+  {
+    "id": "018",
+    "file": "reels/018.mp4",
+    "source_title": "単原子分子理想気体の定圧変化",
+    "caption": null,
+    "youtube_url": null,
+    "posted": false,
+    "posted_at": null,
+    "media_id": null,
+    "_needs_review": "shorts-mapping.csvの1〜17行目に対応するYouTube URLが見つかりませんでした。撮影済みだがCSV未記載、またはYouTube未公開の可能性があります。captionを手動で設定してから投稿対象に含めてください。"
+  }
+]

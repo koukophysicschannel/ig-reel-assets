@@ -1,0 +1,51 @@
+name: Post daily reel
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "true にすると実際には投稿せず、対象動画とURL到達性だけを確認する"
+        required: false
+        default: "true"
+  # 動作確認が済むまでスケジュールは無効化しています。
+  # 有効化する際はコメントを外してください（UTC 21:00 = JST 06:00 の例）。
+  # schedule:
+  #   - cron: "0 21 * * *"
+
+concurrency:
+  group: post-reel
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Publish next reel
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          PAGES_BASE_URL: https://koukophysicschannel.github.io/ig-reel-assets
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        run: python scripts/publish_reel.py
+
+      - name: Commit updated queue
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          git config user.name "reel-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add reels/queue.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: mark reel as posted"
+            git push
+          else
+            echo "queue.json に変更なし（投稿対象がなかった可能性）"
+          fi
