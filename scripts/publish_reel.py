@@ -95,6 +95,28 @@ def publish_container(ig_user_id, token, creation_id):
     )
 
 
+def describe_error(exc):
+    """MetaのOAuthException（トークン失効・無効）かどうかを判定し、
+    分かりやすいラベル付きメッセージを返す。"""
+    if isinstance(exc, urllib.error.HTTPError):
+        try:
+            body = json.loads(exc.read().decode("utf-8", "replace"))
+        except Exception:
+            body = {}
+        error = body.get("error", {})
+        error_type = error.get("type", "")
+        code = error.get("code")
+        message = error.get("message", str(exc))
+        if error_type == "OAuthException" or code in (190,):
+            return (
+                f"🔑 TOKEN_ERROR: アクセストークンが無効または失効しています "
+                f"(code={code}, message={message})。"
+                "refresh-token.ymlの状況を確認するか、手動でトークンを再発行してください。"
+            )
+        return f"公開APIでエラー (type={error_type}, code={code}, message={message})"
+    return f"公開APIでエラー: {exc}"
+
+
 def recent_media_looks_like_phantom_post(ig_user_id, token, window_sec=300):
     """公開APIがエラーを返しても実際には投稿済みだった、という既知の挙動への
     防御策。直近の投稿タイムスタンプが window_sec 以内なら phantom success とみなす。
@@ -145,7 +167,7 @@ def main():
         return
 
     if not token or not ig_user_id:
-        print("IG_ACCESS_TOKEN / IG_USER_ID が未設定です", file=sys.stderr)
+        print("🔑 TOKEN_ERROR: IG_ACCESS_TOKEN / IG_USER_ID が未設定です", file=sys.stderr)
         sys.exit(1)
 
     try:
@@ -161,7 +183,7 @@ def main():
         print(f"公開成功: media_id={media_id}")
 
     except (urllib.error.HTTPError, RuntimeError, TimeoutError, KeyError) as exc:
-        print(f"公開APIでエラー: {exc}", file=sys.stderr)
+        print(describe_error(exc), file=sys.stderr)
         phantom = recent_media_looks_like_phantom_post(ig_user_id, token)
         if phantom:
             print(

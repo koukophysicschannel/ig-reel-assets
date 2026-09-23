@@ -1,0 +1,45 @@
+name: Refresh IG access token
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    # 毎週月曜 JST 12:00 (UTC 03:00)
+    - cron: "0 3 * * 1"
+
+concurrency:
+  group: refresh-token
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Refresh token and update secret
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          GH_PAT_SECRETS_ADMIN: ${{ secrets.GH_PAT_SECRETS_ADMIN }}
+          GH_TOKEN: ${{ secrets.GH_PAT_SECRETS_ADMIN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python scripts/refresh_token.py
+
+      - name: Commit updated token status
+        if: always()
+        run: |
+          git config user.name "reel-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add state/token_status.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update token status"
+            git push
+          else
+            echo "state/token_status.json に変更なし"
+          fi

@@ -8,6 +8,8 @@
 - `reels/queue.json` — 投稿キュー。先頭から`posted: false`の最初の1件を毎日1本消化する
 - `scripts/publish_reel.py` — コンテナ作成→ステータス確認→公開の3ステップを実行し、成功したら`queue.json`を更新するスクリプト
 - `.github/workflows/post-reel.yml` — 日次実行用のGitHub Actionsワークフロー（毎日 JST 18:00 に自動実行。手動実行も可能）
+- `scripts/refresh_token.py` / `.github/workflows/refresh-token.yml` — 週次でアクセストークンをリフレッシュし、GitHub Secretsを自動更新するワークフロー（毎週月曜 JST 12:00）
+- `state/token_status.json` — 最終リフレッシュ日時・失効予定日の記録（非シークレット）
 
 ## queue.json のcaption確認について（確認済み）
 
@@ -24,7 +26,28 @@
 - [x] `workflow_dispatch`（`dry_run: true`）での動作確認
 - [x] `workflow_dispatch`（`dry_run: false`）で001を実際に手動投稿して確認（https://www.instagram.com/reel/DdoDOx2CpaX/）
 - [x] `schedule`を有効化（毎日 JST 18:00 / UTC 09:00, cron: `"0 9 * * *"`, 2026-09-23〜）
-- [ ] アクセストークンの60日ごとのリフレッシュ運用を別途仕組み化する（未着手）
+- [x] トークン自動リフレッシュのワークフロー・スクリプトを実装
+- [ ] **`GH_PAT_SECRETS_ADMIN` シークレットの登録（要手動対応。下記参照）**
+- [ ] 上記登録後、`refresh-token.yml`を`workflow_dispatch`で一度手動実行して疎通確認
+
+## トークン自動リフレッシュのセットアップ（要手動対応・1回のみ）
+
+`refresh-token.yml`がGitHub Secretsを書き換えるには、既定の`GITHUB_TOKEN`では権限が足りないため、専用のPersonal Access Token (PAT) が必要です。
+
+1. github.com → 右上アイコン → **Settings → Developer settings → Fine-grained tokens** → Generate new token
+2. Resource owner: `koukophysicschannel`、Repository access: **Only select repositories → ig-reel-assets**
+3. Permissions → Repository permissions → **Secrets: Read and write** のみ付与
+4. Expiration: 選べる最大期間（通常1年）を設定
+5. 発行されたトークンを`GH_PAT_SECRETS_ADMIN`という名前でこのリポジトリのSecretsに登録
+
+このPATには有効期限があるため、期限が近づいたら再発行・再登録が必要です（自動化不可、要カレンダーリマインダー）。
+
+## トークン失効の監視の仕組み
+
+- 毎週月曜、`IG_ACCESS_TOKEN`をリフレッシュし成功すれば失効予定日が常に約53日先に更新される
+- リフレッシュ失敗時はワークフローが失敗し、GitHub標準の失敗通知メールが届く
+- `state/token_status.json`の失効予定日までの残り日数が14日を切っている場合、リフレッシュの成否に関わらずワークフローを失敗させて警告する（直近数週間リフレッシュが失敗し続けているサイン）
+- `publish_reel.py`側もOAuthException（トークン無効・失効）を検出した場合、ログに`🔑 TOKEN_ERROR:`のラベル付きで明示する
 
 ## 動画URLの形式
 
