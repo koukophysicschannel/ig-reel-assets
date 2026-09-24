@@ -8,8 +8,11 @@ on:
         required: false
         default: "true"
   schedule:
-    # 毎日 JST 18:00 (UTC 09:00)
-    - cron: "0 9 * * *"
+    # 毎日 JST 18:07 (UTC 09:07)
+    # 元は "0 9 * * *"（毎時0分ちょうど）だったが、GitHub Actions公式ドキュメントが
+    # 「毎時0分は高負荷で遅延・未発火しやすい」と明記しており、実際に9/24は
+    # スケジュール実行が一度も発火しなかったため、0分以外にずらした。
+    - cron: "7 9 * * *"
 
 concurrency:
   group: post-reel

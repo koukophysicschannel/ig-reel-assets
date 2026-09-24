@@ -7,8 +7,9 @@
 - `reels/001.mp4` 〜 `reels/018.mp4` — 投稿対象の動画本体（GitHub Pagesで公開し、`video_url`としてInstagram Graph APIに渡す）
 - `reels/queue.json` — 投稿キュー。先頭から`posted: false`の最初の1件を毎日1本消化する
 - `scripts/publish_reel.py` — コンテナ作成→ステータス確認→公開の3ステップを実行し、成功したら`queue.json`を更新するスクリプト
-- `.github/workflows/post-reel.yml` — 日次実行用のGitHub Actionsワークフロー（毎日 JST 18:00 に自動実行。手動実行も可能）
+- `.github/workflows/post-reel.yml` — 日次実行用のGitHub Actionsワークフロー（毎日 JST 18:07 に自動実行。手動実行も可能）
 - `scripts/refresh_token.py` / `.github/workflows/refresh-token.yml` — 週次でアクセストークンをリフレッシュし、GitHub Secretsを自動更新するワークフロー（毎週月曜 JST 12:00）
+- `scripts/diagnose_token.py` / `.github/workflows/diagnose.yml` — 読み取り専用の診断ワークフロー。投稿失敗時に`gh workflow run diagnose.yml`で実行し、トークン・権限・レート制限のどれが原因かを切り分ける
 - `state/token_status.json` — 最終リフレッシュ日時・失効予定日の記録（非シークレット）
 
 ## queue.json のcaption確認について（確認済み）
@@ -25,10 +26,16 @@
 - [x] `queue.json`のcaption内容を目視確認（3件とも確認済み、上記参照）
 - [x] `workflow_dispatch`（`dry_run: true`）での動作確認
 - [x] `workflow_dispatch`（`dry_run: false`）で001を実際に手動投稿して確認（https://www.instagram.com/reel/DdoDOx2CpaX/）
-- [x] `schedule`を有効化（毎日 JST 18:00 / UTC 09:00, cron: `"0 9 * * *"`, 2026-09-23〜）
+- [x] `schedule`を有効化（2026-09-23〜）
 - [x] トークン自動リフレッシュのワークフロー・スクリプトを実装
-- [ ] **`GH_PAT_SECRETS_ADMIN` シークレットの登録（要手動対応。下記参照）**
-- [ ] 上記登録後、`refresh-token.yml`を`workflow_dispatch`で一度手動実行して疎通確認
+- [x] `GH_PAT_SECRETS_ADMIN` シークレットの登録（2026-09-23完了）
+- [x] `refresh-token.yml`の疎通確認（2026-09-23、実際にトークンがリフレッシュされ失効予定日が更新されたことを確認済み）
+- [x] 読み取り専用の診断ワークフロー（`diagnose.yml`）を追加
+
+### 既知の問題と対応履歴
+
+- **2026-09-24: `schedule`（cron `"0 9 * * *"`）が一度も発火しなかった。** GitHub Actions側では`workflow`の`state`は`active`、YAML構文・デフォルトブランチとも正常であることを確認済みだが、原因不明のまま丸1日発火せず、その日の投稿（`002`）は`workflow_dispatch`で手動実行して対応した。GitHub公式ドキュメントに「毎時0分ちょうどのcronは高負荷時に遅延・未発火しやすい」とあるため、cronを`"7 9 * * *"`（JST 18:07）に変更した。次回以降の発火有無を観察中
+- **2026-09-24: 投稿APIが一時的に`OAuthException code=200 "API access blocked"`を返した。** `diagnose.yml`で切り分けたところ、`/me`・`/content_publishing_limit`・`/media`（読み取り）は全て正常（レート制限も`quota_usage: 0/100`で問題なし）で、書き込み（`/media` POST）のみ失敗していた。数分後に同じ処理を再試行したところ成功したため、Meta側の一過性のエラーだったと考えられる。トークン・権限・Instagram testersの状態はいずれも正常だったことを確認済み
 
 ## トークン自動リフレッシュのセットアップ（要手動対応・1回のみ）
 
