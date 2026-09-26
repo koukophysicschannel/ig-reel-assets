@@ -7,12 +7,10 @@ on:
         description: "true にすると実際には投稿せず、対象動画とURL到達性だけを確認する"
         required: false
         default: "true"
-  schedule:
-    # 毎日 JST 18:07 (UTC 09:07)
-    # 元は "0 9 * * *"（毎時0分ちょうど）だったが、GitHub Actions公式ドキュメントが
-    # 「毎時0分は高負荷で遅延・未発火しやすい」と明記しており、実際に9/24は
-    # スケジュール実行が一度も発火しなかったため、0分以外にずらした。
-    - cron: "7 9 * * *"
+  # GitHub Actions自体のscheduleトリガーは、2026-09-24・09-26に
+  # 未発火（公式ドキュメントが認める「高負荷時は丸ごとドロップされうる」動作）が
+  # 発生したため廃止。代わりに、GASの時間主導トリガー（ig-reel-trigger）が
+  # 毎日この workflow_dispatch を外部から起動する運用に変更した。
 
 concurrency:
   group: post-reel

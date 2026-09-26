@@ -7,7 +7,7 @@
 - `reels/001.mp4` 〜 `reels/018.mp4` — 投稿対象の動画本体（GitHub Pagesで公開し、`video_url`としてInstagram Graph APIに渡す）
 - `reels/queue.json` — 投稿キュー。先頭から`posted: false`の最初の1件を毎日1本消化する
 - `scripts/publish_reel.py` — コンテナ作成→ステータス確認→公開の3ステップを実行し、成功したら`queue.json`を更新するスクリプト
-- `.github/workflows/post-reel.yml` — 日次実行用のGitHub Actionsワークフロー（毎日 JST 18:07 に自動実行。手動実行も可能）
+- `.github/workflows/post-reel.yml` — 投稿処理本体（`workflow_dispatch`のみ。日次起動はGAS側から行う。下記参照）
 - `scripts/refresh_token.py` / `.github/workflows/refresh-token.yml` — 週次でアクセストークンをリフレッシュし、GitHub Secretsを自動更新するワークフロー（毎週月曜 JST 12:00）
 - `scripts/diagnose_token.py` / `.github/workflows/diagnose.yml` — 読み取り専用の診断ワークフロー。投稿失敗時に`gh workflow run diagnose.yml`で実行し、トークン・権限・レート制限のどれが原因かを切り分ける
 - `state/token_status.json` — 最終リフレッシュ日時・失効予定日の記録（非シークレット）
@@ -26,16 +26,40 @@
 - [x] `queue.json`のcaption内容を目視確認（3件とも確認済み、上記参照）
 - [x] `workflow_dispatch`（`dry_run: true`）での動作確認
 - [x] `workflow_dispatch`（`dry_run: false`）で001を実際に手動投稿して確認（https://www.instagram.com/reel/DdoDOx2CpaX/）
-- [x] `schedule`を有効化（2026-09-23〜）
 - [x] トークン自動リフレッシュのワークフロー・スクリプトを実装
 - [x] `GH_PAT_SECRETS_ADMIN` シークレットの登録（2026-09-23完了）
 - [x] `refresh-token.yml`の疎通確認（2026-09-23、実際にトークンがリフレッシュされ失効予定日が更新されたことを確認済み）
 - [x] 読み取り専用の診断ワークフロー（`diagnose.yml`）を追加
+- [x] GitHub Actions自体の`schedule`トリガーを廃止し、GAS（`ig-reel-trigger`）による外部起動に切り替え（2026-09-26）
+- [ ] **GAS用PAT（`GITHUB_PAT`）の発行・Script Propertiesへの登録（要手動対応。下記参照）**
+- [ ] GAS側で`setupDailyTrigger`を1回手動実行（要手動対応。下記参照）
 
 ### 既知の問題と対応履歴
 
-- **2026-09-24: `schedule`（cron `"0 9 * * *"`）が一度も発火しなかった。** GitHub Actions側では`workflow`の`state`は`active`、YAML構文・デフォルトブランチとも正常であることを確認済みだが、原因不明のまま丸1日発火せず、その日の投稿（`002`）は`workflow_dispatch`で手動実行して対応した。GitHub公式ドキュメントに「毎時0分ちょうどのcronは高負荷時に遅延・未発火しやすい」とあるため、cronを`"7 9 * * *"`（JST 18:07）に変更した。次回以降の発火有無を観察中
+- **2026-09-24, 09-26: GitHub Actions自体の`schedule`（cron）が複数回、未発火または大幅遅延した。** 9/24は終日未発火、9/25は約5.5時間遅延、9/26も終日未発火。ワークフローの`state`・YAML構文・デフォルトブランチはいずれも正常と確認済み。GitHub公式ドキュメントが「高負荷時はスケジュール実行がドロップされうる」と明記しているため、これはこちらの設定ミスではなくGitHub Actions自体の既知の制約と判断。**対応として、GitHub側のscheduleトリガーを廃止し、Google Apps Script（`ig-reel-trigger`）の時間主導トリガーから`workflow_dispatch`を毎日呼び出す方式に切り替えた**（下記「日次起動の仕組み」参照）。未発火だった日（`002`・`004`）は`workflow_dispatch`の手動実行で埋め合わせ済み
 - **2026-09-24: 投稿APIが一時的に`OAuthException code=200 "API access blocked"`を返した。** `diagnose.yml`で切り分けたところ、`/me`・`/content_publishing_limit`・`/media`（読み取り）は全て正常（レート制限も`quota_usage: 0/100`で問題なし）で、書き込み（`/media` POST）のみ失敗していた。数分後に同じ処理を再試行したところ成功したため、Meta側の一過性のエラーだったと考えられる。トークン・権限・Instagram testersの状態はいずれも正常だったことを確認済み
+
+## 日次起動の仕組み（GAS + GitHub Actions）
+
+GitHub Actions自体の`schedule`は信頼性の問題により廃止した。代わりに、独立したGoogle Apps Scriptプロジェクト **`ig-reel-trigger`**（`~/Library/CloudStorage/Dropbox/GAS/ig-reel-trigger/`、スクリプトID `19fWnkwZnHHLz368Lo4e-7PjO3fPSE9XG1Ghm8FNKcg6RKM30Q--R4jS6`）が、毎日JST 18:10前後に`triggerDailyPost()`を実行し、GitHubの`workflow_dispatch` APIを1回呼ぶだけの役割を担う。投稿ロジック自体（動画選択・Instagram Graph API呼び出し・queue.json更新）はこれまで通りこのリポジトリのPython側に残したまま。
+
+GASの時間主導トリガーとGitHub Actionsのスケジューラは無関係の別システムなので、両方が同時に同じ理由で機能しなくなる可能性は低い。
+
+### セットアップ手順（要手動対応・1回のみ）
+
+1. **GAS用のPATを発行する**（トークン自動リフレッシュ用PATと同じ流れ）
+   - github.com → Settings → Developer settings → **Fine-grained tokens** → Generate new token
+   - Resource owner: `koukophysicschannel`、Repository access: **Only select repositories → ig-reel-assets**
+   - Permissions → Repository permissions → **Actions: Read and write** のみ付与
+   - Expiration: 選べる最大期間
+2. `clasp open`（または https://script.google.com/d/19fWnkwZnHHLz368Lo4e-7PjO3fPSE9XG1Ghm8FNKcg6RKM30Q--R4jS6/edit ）でGASエディタを開く
+3. 左側の歯車アイコン（プロジェクトの設定）→「スクリプト プロパティ」→ プロパティを追加
+   - プロパティ名: `GITHUB_PAT`
+   - 値: 手順1で発行したPAT
+4. エディタ上部の関数選択で `setupDailyTrigger` を選び、実行ボタン（▷）をクリック
+   - 初回はGoogleの権限承認画面が出るので許可する
+   - 実行ログに「毎日 JST 18:10 前後に...」と出れば成功
+5. （任意）`manualTestRun` を実行すると、その場でGitHub側のワークフローが起動する（投稿対象があれば実際に投稿されるので注意）
 
 ## トークン自動リフレッシュのセットアップ（要手動対応・1回のみ）
 
