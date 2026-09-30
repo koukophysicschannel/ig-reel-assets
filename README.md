@@ -31,19 +31,24 @@
 - [x] `refresh-token.yml`の疎通確認（2026-09-23、実際にトークンがリフレッシュされ失効予定日が更新されたことを確認済み）
 - [x] 読み取り専用の診断ワークフロー（`diagnose.yml`）を追加
 - [x] GitHub Actions自体の`schedule`トリガーを廃止し、GAS（`ig-reel-trigger`）による外部起動に切り替え（2026-09-26）
-- [ ] **GAS用PAT（`GITHUB_PAT`）の発行・Script Propertiesへの登録（要手動対応。下記参照）**
-- [ ] GAS側で`setupDailyTrigger`を1回手動実行（要手動対応。下記参照）
+- [x] GAS用PAT（`GITHUB_PAT`）の発行・Script Propertiesへの登録（清水さんが2026-09-27完了）
+- [x] GAS側で`setupDailyTrigger`を1回手動実行（2026-09-27完了）
+- [x] GAS→GitHubの`workflow_dispatch`呼び出しに`inputs.dry_run: "false"`を明示（2026-09-30。下記「既知の問題」参照）
 
 ### 既知の問題と対応履歴
 
 - **2026-09-24, 09-26: GitHub Actions自体の`schedule`（cron）が複数回、未発火または大幅遅延した。** 9/24は終日未発火、9/25は約5.5時間遅延、9/26も終日未発火。ワークフローの`state`・YAML構文・デフォルトブランチはいずれも正常と確認済み。GitHub公式ドキュメントが「高負荷時はスケジュール実行がドロップされうる」と明記しているため、これはこちらの設定ミスではなくGitHub Actions自体の既知の制約と判断。**対応として、GitHub側のscheduleトリガーを廃止し、Google Apps Script（`ig-reel-trigger`）の時間主導トリガーから`workflow_dispatch`を毎日呼び出す方式に切り替えた**（下記「日次起動の仕組み」参照）。未発火だった日（`002`・`004`）は`workflow_dispatch`の手動実行で埋め合わせ済み
 - **2026-09-24: 投稿APIが一時的に`OAuthException code=200 "API access blocked"`を返した。** `diagnose.yml`で切り分けたところ、`/me`・`/content_publishing_limit`・`/media`（読み取り）は全て正常（レート制限も`quota_usage: 0/100`で問題なし）で、書き込み（`/media` POST）のみ失敗していた。数分後に同じ処理を再試行したところ成功したため、Meta側の一過性のエラーだったと考えられる。トークン・権限・Instagram testersの状態はいずれも正常だったことを確認済み
+- **2026-09-27〜09-30: GAS導入後、4日連続で「投稿が進んでいない」状態になっていた。** GitHub Actions側は毎日`workflow_dispatch`が正常に発火し「success」で完走していたため一見問題なく見えたが、実際には**4日間すべてドライランだった**。原因は、GASが`workflow_dispatch` APIを呼ぶ際に`inputs`を渡していなかったこと。GitHubはinputs省略時、ワークフローYAMLの`dry_run`入力に宣言された既定値（`"true"`。手動UI実行時の安全な既定値のつもりだった）を採用してしまい、投稿もqueue.jsonの更新も一切行われないまま「成功」を返し続けていた。**対応として、GASのAPI呼び出しに`inputs: { dry_run: "false" }`を明示するよう修正・push済み**（2026-09-30）。同日、修正後の呼び出しで`005`が実際に投稿されたことを確認済み。
+  - **教訓**: GitHub Actionsの実行結果が「success」であることは、意図した処理（今回で言えば実投稿）が実際に行われたことを保証しない。ワークフロー単体のログだけでなく、`queue.json`の進捗や実際のInstagram側の状態と突き合わせて確認する必要がある
 
 ## 日次起動の仕組み（GAS + GitHub Actions）
 
 GitHub Actions自体の`schedule`は信頼性の問題により廃止した。代わりに、独立したGoogle Apps Scriptプロジェクト **`ig-reel-trigger`**（`~/Library/CloudStorage/Dropbox/GAS/ig-reel-trigger/`、スクリプトID `19fWnkwZnHHLz368Lo4e-7PjO3fPSE9XG1Ghm8FNKcg6RKM30Q--R4jS6`）が、毎日JST 18:10前後に`triggerDailyPost()`を実行し、GitHubの`workflow_dispatch` APIを1回呼ぶだけの役割を担う。投稿ロジック自体（動画選択・Instagram Graph API呼び出し・queue.json更新）はこれまで通りこのリポジトリのPython側に残したまま。
 
 GASの時間主導トリガーとGitHub Actionsのスケジューラは無関係の別システムなので、両方が同時に同じ理由で機能しなくなる可能性は低い。
+
+GAS側は`workflow_dispatch`呼び出し時に`inputs: { dry_run: "false" }`を明示している（省略するとYAMLの既定値`"true"`が採用されドライランになる。2026-09-30に実際に発生した不具合、上記「既知の問題」参照）。
 
 ### セットアップ手順（要手動対応・1回のみ）
 
