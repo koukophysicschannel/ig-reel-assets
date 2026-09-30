@@ -7,10 +7,16 @@ on:
         description: "true にすると実際には投稿せず、対象動画とURL到達性だけを確認する"
         required: false
         default: "true"
+      source:
+        description: "呼び出し元の識別用。GAS(ig-reel-trigger)からは常に'gas'を渡す。手動UI実行では既定のままでよい"
+        required: false
+        default: "manual"
   # GitHub Actions自体のscheduleトリガーは、2026-09-24・09-26に
   # 未発火（公式ドキュメントが認める「高負荷時は丸ごとドロップされうる」動作）が
   # 発生したため廃止。代わりに、GASの時間主導トリガー（ig-reel-trigger）が
   # 毎日この workflow_dispatch を外部から起動する運用に変更した。
+  # ここに schedule を復活させる場合も、下の「ドライラン完走の検知」の
+  # if条件に event_name == 'schedule' が含まれているため、そのまま機能する。
 
 concurrency:
   group: post-reel
@@ -49,3 +55,18 @@ jobs:
           else
             echo "queue.json に変更なし（投稿対象がなかった可能性）"
           fi
+
+      # 2026-09-30に実際に起きた不具合への対策。GAS(ig-reel-trigger)や
+      # scheduleなど、人が画面を見て意図的にdry_runを選んでいないはずの
+      # 実行で、何らかの理由（inputs未指定によるYAML既定値へのフォール
+      # バック等）でdry_run=trueのまま完走してしまった場合、それは常に
+      # 「投稿されるべきなのに投稿されなかった」異常事態である。
+      # 気づかれないまま「success」表示だけが残る事態を防ぐため、ここで
+      # 明示的に失敗させ、GitHub標準の失敗通知メールを発生させる。
+      - name: Fail if an automated trigger completed as a dry run
+        if: >-
+          (github.event_name == 'schedule' || github.event.inputs.source == 'gas')
+          && (github.event.inputs.dry_run || 'false') == 'true'
+        run: |
+          echo "::error::schedule/GAS経由の実行がdry_run=trueのまま完走しました。意図しない状態です。post-reel.ymlのworkflow_dispatch呼び出し元(GASのpayload等)がinputsを正しく渡しているか確認してください。"
+          exit 1
