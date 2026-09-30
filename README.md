@@ -41,6 +41,7 @@
 - **2026-09-24: 投稿APIが一時的に`OAuthException code=200 "API access blocked"`を返した。** `diagnose.yml`で切り分けたところ、`/me`・`/content_publishing_limit`・`/media`（読み取り）は全て正常（レート制限も`quota_usage: 0/100`で問題なし）で、書き込み（`/media` POST）のみ失敗していた。数分後に同じ処理を再試行したところ成功したため、Meta側の一過性のエラーだったと考えられる。トークン・権限・Instagram testersの状態はいずれも正常だったことを確認済み
 - **2026-09-27〜09-30: GAS導入後、4日連続で「投稿が進んでいない」状態になっていた。** GitHub Actions側は毎日`workflow_dispatch`が正常に発火し「success」で完走していたため一見問題なく見えたが、実際には**4日間すべてドライランだった**。原因は、GASが`workflow_dispatch` APIを呼ぶ際に`inputs`を渡していなかったこと。GitHubはinputs省略時、ワークフローYAMLの`dry_run`入力に宣言された既定値（`"true"`。手動UI実行時の安全な既定値のつもりだった）を採用してしまい、投稿もqueue.jsonの更新も一切行われないまま「成功」を返し続けていた。**対応として、GASのAPI呼び出しに`inputs: { dry_run: "false" }`を明示するよう修正・push済み**（2026-09-30）。同日、修正後の呼び出しで`005`が実際に投稿されたことを確認済み。
   - **教訓**: GitHub Actionsの実行結果が「success」であることは、意図した処理（今回で言えば実投稿）が実際に行われたことを保証しない。ワークフロー単体のログだけでなく、`queue.json`の進捗や実際のInstagram側の状態と突き合わせて確認する必要がある
+  - **再発防止策（2026-09-30追加）**: `post-reel.yml`に「ドライラン完走の検知」ステップを追加した。`workflow_dispatch`の`source`入力（GASは常に`"gas"`を渡す）と`event_name == 'schedule'`のいずれかに該当する実行で、`dry_run`が`"true"`のまま完走した場合は明示的に`exit 1`し、GitHub標準の失敗通知メールを発生させる。人が手動でUIから意図的にdry_run実行する場合（`source`を既定の`"manual"`のまま）は対象外。実際に「source=gasだがdry_run未指定」というバグ再現パターンで失敗することと、正常なGAS呼び出し（`dry_run:"false", source:"gas"`）では誤検知しないことの両方を検証済み
 
 ## 日次起動の仕組み（GAS + GitHub Actions）
 
