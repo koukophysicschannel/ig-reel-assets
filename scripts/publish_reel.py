@@ -8,8 +8,19 @@
                     (例: https://koukophysicschannel.github.io/ig-reel-assets)
   DRY_RUN          "true" の場合、実際のAPI呼び出しを行わず対象と動画URLの
                     到達性だけを確認して終了する。
+
+queue.jsonのnot_beforeについて:
+  特定の1件を「この時刻より前には投稿しない」形で先頭に割り込ませたいとき
+  （例: 今日だけ特別な時刻に投稿したい）、そのエントリに
+  not_before（ISO8601、タイムゾーン付き。例 "2026-10-02T18:40:00+09:00"）
+  を持たせる。先頭の未投稿エントリがnot_beforeを満たしていなければ、
+  pick_nextはNoneを返して「今回は何も投稿しない」（exit 0、異常ではない）。
+  後続のエントリへフォールバックはしない（先頭が保留中の間、キュー全体を
+  止める）。not_beforeに達したら通常のエントリと同じに扱われ、投稿後は
+  他のフィールドと同様キューに残り続けるだけ（posted更新で事実上無効化）。
 """
 
+import datetime as dt
 import json
 import os
 import sys
@@ -35,10 +46,27 @@ def save_queue(queue):
         f.write("\n")
 
 
-def pick_next(queue):
+def pick_next(queue, now=None):
+    """先頭から最初の 未投稿かつcaption付き のエントリを返す。
+
+    そのエントリに not_before があり、現在時刻がまだ達していなければ、
+    先頭が保留中とみなしNoneを返す（後続は見ない。その回は何も投稿しない）。
+    """
+    if now is None:
+        now = dt.datetime.now(dt.timezone.utc)
     for entry in queue:
-        if not entry.get("posted") and entry.get("caption"):
-            return entry
+        if entry.get("posted") or not entry.get("caption"):
+            continue
+        nb = entry.get("not_before")
+        if nb:
+            nb_dt = dt.datetime.fromisoformat(nb)
+            if nb_dt.tzinfo is None:
+                nb_dt = nb_dt.replace(tzinfo=dt.timezone.utc)
+            if now < nb_dt:
+                print(f"先頭の {entry['id']} は not_before={nb} で保留中です"
+                      f"（現在 {now.isoformat()}）。今回は何も投稿しません。")
+                return None
+        return entry
     return None
 
 
@@ -148,7 +176,8 @@ def main():
     queue = load_queue()
     entry = pick_next(queue)
     if entry is None:
-        print("投稿対象がありません（全て投稿済み、またはcaption未設定）")
+        print("投稿対象がありません（全て投稿済み、caption未設定、"
+              "または先頭がnot_beforeで保留中）")
         sys.exit(0)
 
     video_url = f"{pages_base.rstrip('/')}/{entry['file']}"
