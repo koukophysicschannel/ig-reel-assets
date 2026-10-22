@@ -8,7 +8,15 @@
     "posted": true,
     "posted_at": "2026-10-02T09:42:49Z",
     "media_id": "18000928796795857",
-    "not_before": "2026-10-02T18:40:00+09:00"
+    "not_before": "2026-10-02T18:40:00+09:00",
+    "last_posted_at": "2026-10-02T09:42:49Z",
+    "last_media_id": "18000928796795857",
+    "post_log": [
+      {
+        "posted_at": "2026-10-02T09:42:49Z",
+        "media_id": "18000928796795857"
+      }
+    ]
   },
   {
     "id": "001",
@@ -18,7 +26,15 @@
     "youtube_url": "https://www.youtube.com/shorts/kGIg28VBcrc",
     "posted": true,
     "posted_at": "2026-09-23T10:04:24Z",
-    "media_id": "18408235909093373"
+    "media_id": "18408235909093373",
+    "last_posted_at": "2026-09-23T10:04:24Z",
+    "last_media_id": "18408235909093373",
+    "post_log": [
+      {
+        "posted_at": "2026-09-23T10:04:24Z",
+        "media_id": "18408235909093373"
+      }
+    ]
   },
   {
     "id": "002",
@@ -28,7 +44,15 @@
     "youtube_url": "https://www.youtube.com/shorts/xqsSH60dCRY",
     "posted": true,
     "posted_at": "2026-09-24T11:31:55Z",
-    "media_id": "18108876884168947"
+    "media_id": "18108876884168947",
+    "last_posted_at": "2026-09-24T11:31:55Z",
+    "last_media_id": "18108876884168947",
+    "post_log": [
+      {
+        "posted_at": "2026-09-24T11:31:55Z",
+        "media_id": "18108876884168947"
+      }
+    ]
   },
   {
     "id": "003",
@@ -38,7 +62,15 @@
     "youtube_url": "https://www.youtube.com/shorts/wADgc3-gTh0",
     "posted": true,
     "posted_at": "2026-09-25T14:35:44Z",
-    "media_id": "18080692259722100"
+    "media_id": "18080692259722100",
+    "last_posted_at": "2026-09-25T14:35:44Z",
+    "last_media_id": "18080692259722100",
+    "post_log": [
+      {
+        "posted_at": "2026-09-25T14:35:44Z",
+        "media_id": "18080692259722100"
+      }
+    ]
   },
   {
     "id": "004",
@@ -48,7 +80,15 @@
     "youtube_url": "https://www.youtube.com/shorts/p81OFfX-FCs",
     "posted": true,
     "posted_at": "2026-09-26T12:32:14Z",
-    "media_id": "18499936765100956"
+    "media_id": "18499936765100956",
+    "last_posted_at": "2026-09-26T12:32:14Z",
+    "last_media_id": "18499936765100956",
+    "post_log": [
+      {
+        "posted_at": "2026-09-26T12:32:14Z",
+        "media_id": "18499936765100956"
+      }
+    ]
   },
   {
     "id": "005",
@@ -58,7 +98,15 @@
     "youtube_url": "https://www.youtube.com/shorts/mOB0as97VkE",
     "posted": true,
     "posted_at": "2026-09-30T10:04:21Z",
-    "media_id": "17949691827052747"
+    "media_id": "17949691827052747",
+    "last_posted_at": "2026-09-30T10:04:21Z",
+    "last_media_id": "17949691827052747",
+    "post_log": [
+      {
+        "posted_at": "2026-09-30T10:04:21Z",
+        "media_id": "17949691827052747"
+      }
+    ]
   },
   {
     "id": "006",
@@ -69,7 +117,15 @@
     "posted": true,
     "posted_at": "2026-09-30T10:34:55Z",
     "media_id": "18073001810753705",
-    "_needs_review": "CSVタイトルは「自由落下と鉛直投げ上げ」両方に言及しており、file 006と017のどちらに対応するか推測で割り振っています。投稿前に一度確認してください。"
+    "_needs_review": "CSVタイトルは「自由落下と鉛直投げ上げ」両方に言及しており、file 006と017のどちらに対応するか推測で割り振っています。投稿前に一度確認してください。",
+    "last_posted_at": "2026-09-30T10:34:55Z",
+    "last_media_id": "18073001810753705",
+    "post_log": [
+      {
+        "posted_at": "2026-09-30T10:34:55Z",
+        "media_id": "18073001810753705"
+      }
+    ]
   },
   {
     "id": "007",
@@ -79,7 +135,15 @@
     "youtube_url": "https://www.youtube.com/shorts/gAKqSGoWx-E",
     "posted": true,
     "posted_at": "2026-10-01T09:08:15Z",
-    "media_id": "18091980866459260"
+    "media_id": "18091980866459260",
+    "last_posted_at": "2026-10-01T09:08:15Z",
+    "last_media_id": "18091980866459260",
+    "post_log": [
+      {
+        "posted_at": "2026-10-01T09:08:15Z",
+        "media_id": "18091980866459260"
+      }
+    ]
   },
   {
     "id": "008",
@@ -89,7 +153,15 @@
     "youtube_url": "https://www.youtube.com/shorts/ecN8CQwB4cM",
     "posted": true,
     "posted_at": "2026-10-03T09:07:56Z",
-    "media_id": "17964369308981700"
+    "media_id": "17964369308981700",
+    "last_posted_at": "2026-10-03T09:07:56Z",
+    "last_media_id": "17964369308981700",
+    "post_log": [
+      {
+        "posted_at": "2026-10-03T09:07:56Z",
+        "media_id": "17964369308981700"
+      }
+    ]
   },
   {
     "id": "020",
@@ -99,7 +171,15 @@
     "youtube_url": "https://www.youtube.com/shorts/W1gXyRnYRlM",
     "posted": true,
     "posted_at": "2026-10-04T09:08:51Z",
-    "media_id": "18101072693644497"
+    "media_id": "18101072693644497",
+    "last_posted_at": "2026-10-04T09:08:51Z",
+    "last_media_id": "18101072693644497",
+    "post_log": [
+      {
+        "posted_at": "2026-10-04T09:08:51Z",
+        "media_id": "18101072693644497"
+      }
+    ]
   },
   {
     "id": "009",
@@ -110,7 +190,15 @@
     "posted": true,
     "posted_at": "2026-10-05T09:07:54Z",
     "media_id": "18144628996622411",
-    "_needs_review": "ファイル名「7章_よくある」とCSVタイトル「2物体の衝突」の対応はトピックからの推測です。投稿前に内容を確認してください。"
+    "_needs_review": "ファイル名「7章_よくある」とCSVタイトル「2物体の衝突」の対応はトピックからの推測です。投稿前に内容を確認してください。",
+    "last_posted_at": "2026-10-05T09:07:54Z",
+    "last_media_id": "18144628996622411",
+    "post_log": [
+      {
+        "posted_at": "2026-10-05T09:07:54Z",
+        "media_id": "18144628996622411"
+      }
+    ]
   },
   {
     "id": "010",
@@ -120,7 +208,15 @@
     "youtube_url": "https://www.youtube.com/shorts/Y9vCnKWUHzk",
     "posted": true,
     "posted_at": "2026-10-06T09:08:39Z",
-    "media_id": "18635679100022768"
+    "media_id": "18635679100022768",
+    "last_posted_at": "2026-10-06T09:08:39Z",
+    "last_media_id": "18635679100022768",
+    "post_log": [
+      {
+        "posted_at": "2026-10-06T09:08:39Z",
+        "media_id": "18635679100022768"
+      }
+    ]
   },
   {
     "id": "011",
@@ -130,7 +226,15 @@
     "youtube_url": "https://www.youtube.com/shorts/Y1sPqpEPh6A",
     "posted": true,
     "posted_at": "2026-10-07T09:08:38Z",
-    "media_id": "17937189894123723"
+    "media_id": "17937189894123723",
+    "last_posted_at": "2026-10-07T09:08:38Z",
+    "last_media_id": "17937189894123723",
+    "post_log": [
+      {
+        "posted_at": "2026-10-07T09:08:38Z",
+        "media_id": "17937189894123723"
+      }
+    ]
   },
   {
     "id": "012",
@@ -140,7 +244,15 @@
     "youtube_url": "https://www.youtube.com/shorts/UVmcgsc1m3w",
     "posted": true,
     "posted_at": "2026-10-08T09:08:18Z",
-    "media_id": "18115435771824047"
+    "media_id": "18115435771824047",
+    "last_posted_at": "2026-10-08T09:08:18Z",
+    "last_media_id": "18115435771824047",
+    "post_log": [
+      {
+        "posted_at": "2026-10-08T09:08:18Z",
+        "media_id": "18115435771824047"
+      }
+    ]
   },
   {
     "id": "013",
@@ -150,7 +262,15 @@
     "youtube_url": "https://www.youtube.com/shorts/OJ0jCc-uNuM",
     "posted": true,
     "posted_at": "2026-10-09T09:08:33Z",
-    "media_id": "18128684830772818"
+    "media_id": "18128684830772818",
+    "last_posted_at": "2026-10-09T09:08:33Z",
+    "last_media_id": "18128684830772818",
+    "post_log": [
+      {
+        "posted_at": "2026-10-09T09:08:33Z",
+        "media_id": "18128684830772818"
+      }
+    ]
   },
   {
     "id": "014",
@@ -160,7 +280,15 @@
     "youtube_url": "https://www.youtube.com/shorts/Ika9lp5ogOI",
     "posted": true,
     "posted_at": "2026-10-10T09:07:55Z",
-    "media_id": "17978113808918000"
+    "media_id": "17978113808918000",
+    "last_posted_at": "2026-10-10T09:07:55Z",
+    "last_media_id": "17978113808918000",
+    "post_log": [
+      {
+        "posted_at": "2026-10-10T09:07:55Z",
+        "media_id": "17978113808918000"
+      }
+    ]
   },
   {
     "id": "015",
@@ -170,7 +298,15 @@
     "youtube_url": "https://www.youtube.com/shorts/DPlIpLJ4zHE",
     "posted": true,
     "posted_at": "2026-10-11T09:08:00Z",
-    "media_id": "18111647824884745"
+    "media_id": "18111647824884745",
+    "last_posted_at": "2026-10-11T09:08:00Z",
+    "last_media_id": "18111647824884745",
+    "post_log": [
+      {
+        "posted_at": "2026-10-11T09:08:00Z",
+        "media_id": "18111647824884745"
+      }
+    ]
   },
   {
     "id": "016",
@@ -180,7 +316,15 @@
     "youtube_url": "https://www.youtube.com/shorts/9DJhrKQqCK4",
     "posted": true,
     "posted_at": "2026-10-12T09:07:59Z",
-    "media_id": "18490055644105911"
+    "media_id": "18490055644105911",
+    "last_posted_at": "2026-10-12T09:07:59Z",
+    "last_media_id": "18490055644105911",
+    "post_log": [
+      {
+        "posted_at": "2026-10-12T09:07:59Z",
+        "media_id": "18490055644105911"
+      }
+    ]
   },
   {
     "id": "017",
@@ -191,7 +335,15 @@
     "posted": true,
     "posted_at": "2026-10-13T09:08:19Z",
     "media_id": "18635586526014375",
-    "_needs_review": "CSVタイトルは「自由落下と鉛直投げ上げ」両方に言及しており、file 006と017のどちらに対応するか推測で割り振っています。投稿前に一度確認してください。"
+    "_needs_review": "CSVタイトルは「自由落下と鉛直投げ上げ」両方に言及しており、file 006と017のどちらに対応するか推測で割り振っています。投稿前に一度確認してください。",
+    "last_posted_at": "2026-10-13T09:08:19Z",
+    "last_media_id": "18635586526014375",
+    "post_log": [
+      {
+        "posted_at": "2026-10-13T09:08:19Z",
+        "media_id": "18635586526014375"
+      }
+    ]
   },
   {
     "id": "018",
@@ -202,6 +354,9 @@
     "posted": false,
     "posted_at": null,
     "media_id": null,
-    "_needs_review": "shorts-mapping.csvの1〜17行目に対応するYouTube URLが見つかりませんでした。撮影済みだがCSV未記載、またはYouTube未公開の可能性があります。captionを手動で設定してから投稿対象に含めてください。"
+    "_needs_review": "shorts-mapping.csvの1〜17行目に対応するYouTube URLが見つかりませんでした。撮影済みだがCSV未記載、またはYouTube未公開の可能性があります。captionを手動で設定してから投稿対象に含めてください。",
+    "last_posted_at": null,
+    "last_media_id": null,
+    "post_log": []
   }
 ]

@@ -51,6 +51,10 @@ jobs:
           git add reels/queue.json
           if ! git diff --cached --quiet; then
             git commit -m "chore: mark reel as posted"
+            # 投稿の記録が push できないと、翌日に同じ動画を選び直してしまう。
+            # 他のコミット（トークン状態の更新など）と競合しても通るよう、
+            # 取り込んでから push する（2026-10-23 追加）。
+            git pull --rebase origin main
             git push
           else
             echo "queue.json に変更なし（投稿対象がなかった可能性）"

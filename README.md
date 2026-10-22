@@ -5,7 +5,8 @@
 ## 構成
 
 - `reels/001.mp4` 〜 `reels/018.mp4` — 投稿対象の動画本体（GitHub Pagesで公開し、`video_url`としてInstagram Graph APIに渡す）
-- `reels/queue.json` — 投稿キュー。先頭から`posted: false`の最初の1件を毎日1本消化する
+- `reels/queue.json` — 投稿キュー。毎日1本、**最後に投稿した日時（`last_posted_at`）がいちばん古い動画**を選んでくり返し投稿する（2026-10-23〜。下記「くり返し投稿」参照）
+- `scripts/test_publish_reel.py` — 選び方と1日1本の上限を擬似データで確かめるテスト（`python3 scripts/test_publish_reel.py`。APIには出ない）
 - `scripts/publish_reel.py` — コンテナ作成→ステータス確認→公開の3ステップを実行し、成功したら`queue.json`を更新するスクリプト
 - `.github/workflows/post-reel.yml` — 投稿処理本体（`workflow_dispatch`のみ。日次起動はGAS側から行う。下記参照）
 - `scripts/refresh_token.py` / `.github/workflows/refresh-token.yml` — 週次でアクセストークンをリフレッシュし、GitHub Secretsを自動更新するワークフロー（毎週月曜 JST 12:00）
@@ -92,13 +93,36 @@ GAS側は`workflow_dispatch`呼び出し時に`inputs: { dry_run: "false" }`を�
 https://koukophysicschannel.github.io/ig-reel-assets/reels/001.mp4
 ```
 
+## くり返し投稿（2026-10-23〜）
+
+**経緯**: 当初は「先頭から`posted:false`の最初の1件」を毎日消化する作りだったため、10/13に017を投稿した時点でキャプションのある動画を使い切り、**10/14〜10/22の9日間は毎日「投稿対象がありません」で何も投稿されなかった**（GAS・GitHub Actions・トークンはいずれも正常で、ワークフローは`DRY_RUN: false`のまま「success」で終わっていた）。これをくり返し投稿に変えた。
+
+**選び方**（`publish_reel.py`の`pick_next()`）: キャプションのある動画のうち、
+1. 一度も投稿していないもの（`last_posted_at`が空）を先に
+2. 次に`last_posted_at`がいちばん古いもの
+3. 同じなら番号（`id`）の小さいもの
+
+キャプションが空の動画（`018`）は飛ばし続ける。キャプションを入れれば、未投稿なので次の回で最優先で選ばれる。配列の並び順は選び方に関係しなくなった。
+
+**1日1本の上限**: 同じ日（JST）にすでに1本投稿していたら、何もせず正常終了（exit 0）する。判定は2重。
+- a. `queue.json`の`last_posted_at`に今日（JST）のものがある
+- b. Instagram側の最新の投稿が今日（JST）のものである。投稿は成功したのに記録・pushに失敗した場合や、公開APIがエラーを返したのに実際は投稿されていた場合でも、再実行で2本目を出さないため。**bを確かめられない（APIエラー等）ときは投稿しない**（exit 1。失敗通知メールが届く）。bで今日の投稿が見つかり、キャプション等から動画が特定できれば、`queue.json`の記録を補正してから終了する
+
+手動実行・再実行・GASの重複起動のどれでも、1日（JST）に2本目は出ない。Instagramに手で別の投稿をした日も、その日は自動投稿されない。
+
+**queue.jsonの項目**: `last_posted_at`（最後に投稿した日時・UTC）／`last_media_id`／`post_log`（投稿履歴`[{posted_at, media_id}]`）。`posted`・`posted_at`・`media_id`は旧方式の名残（初回投稿の記録）で、選び方には使わない。
+
+**移行時の復元（2026-10-23）**: 投稿済みの19本は、`queue.json`の`posted_at`を`last_posted_at`にした。git履歴の「chore: mark reel as posted」コミットと照合し、19本とも時刻が1秒以内・`media_id`も一致し、各動画が1回ずつ投稿されていたことを確認済み。番号順に仮の日時を割り当てた動画はない。
+
 ## 特定の時刻まで投稿を保留する（`not_before`）
 
-通常は「先頭から`posted:false`の最初の1件」を毎日1本消化するだけだが、
 特定の1件だけを決まった時刻まで投稿させたいとき（2026-10-02、ショート
 「重心」で初めて使用）は、そのエントリに`not_before`
-（ISO8601・タイムゾーン付き。例 `"2026-10-02T18:40:00+09:00"`）を持たせて
-キューの先頭に置く。
+（ISO8601・タイムゾーン付き。例 `"2026-10-02T18:40:00+09:00"`）を持たせる。
+**くり返し投稿に変えたあと（2026-10-23〜）は、「キューの先頭」ではなく
+「上の選び方で選ばれた1本」に対して判定する。** 未投稿の新しい動画は
+最優先で選ばれるので、新しい動画に`not_before`を付ければ従来どおり働く。
+以下の箇条書きの「先頭」は「選ばれた1本」と読み替えること。
 
 - `publish_reel.py`の`pick_next()`が、先頭の未投稿エントリの`not_before`が
   未来ならそのエントリを**保留**とみなし、`None`を返す（`exit 0`。異常では
